@@ -1,3 +1,5 @@
+using TupleRewriter.AST;
+
 namespace TupleRewriter;
 
 public static class TupleLiteralRewriter

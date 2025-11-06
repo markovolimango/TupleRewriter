@@ -1,7 +1,12 @@
-namespace TupleRewriter;
+namespace TupleRewriter.AST;
 
-public static class AstPrinter
+public static class ASTPrinter
 {
+    public static string Print(Block root)
+    {
+        return PrintStmt(root);
+    }
+
     private static string PrintElements(IReadOnlyList<Expr> elements)
     {
         if (elements.Count == 0)
@@ -14,7 +19,7 @@ public static class AstPrinter
         return res + ")";
     }
 
-    private static string PrintExpr(Expr expr)
+    public static string PrintExpr(Expr expr)
     {
         switch (expr)
         {
@@ -44,7 +49,7 @@ public static class AstPrinter
                 var res = $"{ind}{{\n";
                 foreach (var blockStmt in block.Statements)
                     res += $"{PrintStmt(blockStmt, indent + 1)}\n";
-                return res + "}";
+                return res + $"{ind}}}";
             default:
                 throw new NotImplementedException();
         }

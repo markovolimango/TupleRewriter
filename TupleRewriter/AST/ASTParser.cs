@@ -1,13 +1,13 @@
-namespace TupleRewriter;
+namespace TupleRewriter.AST;
 
 public class ASTParser
 {
-    private readonly List<string> tokens;
+    private readonly List<string> _tokens;
     private int i;
 
     public ASTParser(string source)
     {
-        tokens = Tokenize(source);
+        _tokens = Tokenize(source);
     }
 
     public Block Parse()
@@ -15,26 +15,36 @@ public class ASTParser
         return ParseBlockStmt();
     }
 
+    private string PeekToken()
+    {
+        if (i >= _tokens.Count)
+            throw new ParseException("Unexpected end of input.");
+        return _tokens[i];
+    }
+
     private string GetToken(string? expected = null)
     {
+        if (i >= _tokens.Count)
+            throw new ParseException("Unexpected end of input.");
         if (expected is null)
-            return tokens[i++];
-        if (tokens[i] != expected)
-            throw new Exception("Expected " + expected);
-        return tokens[i++];
+            return _tokens[i++];
+        if (_tokens[i] != expected)
+            throw new ParseException($"Expected {expected}, got {_tokens[i]}.");
+        return _tokens[i++];
     }
 
     private Expr ParseExpr()
     {
-        if (tokens[i] == "new")
+        var token = PeekToken();
+        if (token == "new")
             return ParseNewExpr();
-        if (char.IsLetter(tokens[i][0]) || tokens[i][0] == '_')
+        if (char.IsLetter(token[0]) || token[0] == '_')
             return ParseIdExpr();
-        if (char.IsNumber(tokens[i][0]))
+        if (char.IsNumber(token[0]))
             return ParseNumExpr();
-        if (tokens[i] == "(")
+        if (token == "(")
             return ParseTupleLiteralExpr();
-        throw new Exception("Not a valid expression");
+        throw new ParseException($"Invalid expression {token}.");
     }
 
     private Id ParseIdExpr()
@@ -53,14 +63,14 @@ public class ASTParser
     {
         GetToken("(");
         var elements = new List<Expr>();
-        if (tokens[i] == ")")
+        if (PeekToken() == ")")
         {
             GetToken(")");
             return new TupleLiteral(elements);
         }
 
         elements.Add(ParseExpr());
-        while (tokens[i] != ")")
+        while (PeekToken() != ")")
         {
             GetToken(",");
             elements.Add(ParseExpr());
@@ -77,14 +87,14 @@ public class ASTParser
         GetToken("(");
         var args = new List<Expr>();
 
-        if (tokens[i] == ")")
+        if (PeekToken() == ")")
         {
             GetToken(")");
             return new NewExpr(typeName, args);
         }
 
         args.Add(ParseExpr());
-        while (tokens[i] != ")")
+        while (PeekToken() != ")")
         {
             GetToken(",");
             args.Add(ParseExpr());
@@ -96,13 +106,14 @@ public class ASTParser
 
     private Stmt ParseStmt()
     {
-        if (tokens[i] == "var")
+        var token = PeekToken();
+        if (token == "var")
             return ParseVarDeclStmt();
-        if (tokens[i] == "return")
+        if (token == "return")
             return ParseReturnStmt();
-        if (tokens[i] == "{")
+        if (token == "{")
             return ParseBlockStmt();
-        throw new Exception("Not a valid statement");
+        throw new ParseException($"Invalid statement {token}.");
     }
 
     private VarDecl ParseVarDeclStmt()
@@ -125,10 +136,12 @@ public class ASTParser
     {
         GetToken("{");
         var statements = new List<Stmt>();
-        while (tokens[i] != "}")
+        while (PeekToken() != "}")
         {
-            statements.Add(ParseStmt());
-            GetToken(";");
+            var statement = ParseStmt();
+            statements.Add(statement);
+            if (statement is not Block)
+                GetToken(";");
         }
 
         GetToken("}");
@@ -159,5 +172,12 @@ public class ASTParser
             }
 
         return tokens;
+    }
+}
+
+public class ParseException : Exception
+{
+    public ParseException(string message) : base(message)
+    {
     }
 }

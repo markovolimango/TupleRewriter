@@ -1,3 +1,5 @@
+using TupleRewriter.AST;
+
 namespace TupleRewriter.Tests;
 
 public class Tests
@@ -44,29 +46,29 @@ public class Tests
         Assert.That(newRoot.Statements.Count, Is.EqualTo(2));
 
         var xDecl = newRoot.Statements[0] as VarDecl;
-        var xInit = xDecl!.Init as NewExpr;
+        var xInit = xDecl.Init as NewExpr;
 
         Assert.That(xDecl.Init, Is.TypeOf<NewExpr>());
-        Assert.That(xInit!.TypeName, Is.EqualTo(typename));
+        Assert.That(xInit.TypeName, Is.EqualTo(typename));
         Assert.That(xInit.Args, Has.Count.EqualTo(3));
 
         Assert.That(newRoot.Statements[1], Is.TypeOf<Block>());
-        Assert.That((newRoot.Statements[1] as Block)!.Statements, Has.Count.EqualTo(2));
+        Assert.That((newRoot.Statements[1] as Block).Statements, Has.Count.EqualTo(2));
 
-        var yDecl = (newRoot.Statements[1] as Block)!.Statements[0] as VarDecl;
-        var yInit = yDecl!.Init as NewExpr;
+        var yDecl = (newRoot.Statements[1] as Block).Statements[0] as VarDecl;
+        var yInit = yDecl.Init as NewExpr;
 
         Assert.That(yDecl.Init, Is.TypeOf<NewExpr>());
-        Assert.That(yInit!.TypeName, Is.EqualTo(typename));
+        Assert.That(yInit.TypeName, Is.EqualTo(typename));
 
         var nested1 = yInit.Args[1];
 
         Assert.That(nested1, Is.TypeOf<NewExpr>());
-        Assert.That((nested1 as NewExpr)!.Args[2], Is.EqualTo(new Id("x")));
+        Assert.That((nested1 as NewExpr).Args[2], Is.EqualTo(new Id("x")));
 
-        var nested2 = (nested1 as NewExpr)!.Args[1] as NewExpr;
+        var nested2 = (nested1 as NewExpr).Args[1] as NewExpr;
 
-        Assert.That(nested2!.Args, Has.Count.EqualTo(2));
+        Assert.That(nested2.Args, Has.Count.EqualTo(2));
         Assert.That(nested2.Args[0], Is.EqualTo(new Num("6")));
     }
 
@@ -92,11 +94,11 @@ public class Tests
         Assert.That(newRoot.Statements, Has.Count.EqualTo(4));
 
         var newXDecl = newRoot.Statements[0] as VarDecl;
-        var newXInit = newXDecl!.Init as NewExpr;
+        var newXInit = newXDecl.Init as NewExpr;
 
         Assert.That(newXDecl.Name, Is.EqualTo("x"));
         Assert.That(newXDecl.Init, Is.TypeOf<NewExpr>());
-        Assert.That(newXInit!.Args[0], Is.EqualTo(xInit.Args[0]));
+        Assert.That(newXInit.Args[0], Is.EqualTo(xInit.Args[0]));
         Assert.That(newXInit.Args[1], Is.EqualTo(xInit.Args[1]));
         Assert.That(newXInit.Args[2], Is.EqualTo(xInit.Args[2]));
 
@@ -104,7 +106,7 @@ public class Tests
 
         Assert.That(newRoot.Statements[2], Is.EqualTo(zDecl));
 
-        Assert.That((newRoot.Statements[3] as Return)!.Value, Is.TypeOf<NewExpr>());
+        Assert.That((newRoot.Statements[3] as Return).Value, Is.TypeOf<NewExpr>());
     }
 
     [Test]

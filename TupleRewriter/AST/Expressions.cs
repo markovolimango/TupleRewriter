@@ -1,4 +1,4 @@
-namespace TupleRewriter;
+namespace TupleRewriter.AST;
 
 public abstract record Expr;
 
