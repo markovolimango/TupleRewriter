@@ -4,29 +4,16 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        var ast = new Block(new Stmt[]
-        {
-            new VarDecl(
-                "x",
-                new TupleLiteral(
-                    [
-                        new Num("1"),
-                        new TupleLiteral(
-                        [
-                            new NewExpr("int", [new Num("17")]),
-                            new Num("67")
-                        ]),
-                        new Num("3")
-                    ]
-                )
-            ),
-            new Return(
-                new Id("x")
-            )
-        });
+        var parser = new ASTParser(File.ReadAllText("../../../example.txt"));
 
-        Console.WriteLine(AstPrinter.PrintStmt(ast));
-        ast = TupleLiteralRewriter.Rewrite(ast, "Class");
-        Console.WriteLine(AstPrinter.PrintStmt(ast));
+        try
+        {
+            var root = parser.Parse();
+            Console.WriteLine(AstPrinter.PrintStmt(root));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Invalid input file.");
+        }
     }
 }

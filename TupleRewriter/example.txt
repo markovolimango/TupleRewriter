@@ -1,0 +1,4 @@
+{
+    var x = new Mare((gogaboga, 17), ((2, 7), new Mare(1, 2)));
+    return x;
+}
