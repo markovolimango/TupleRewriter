@@ -19,12 +19,16 @@ public static class Program
         try
         {
             var root = parser.Parse();
-            var newRoot = TupleLiteralRewriter.Rewrite(root, "Class");
+
+            Console.Write("Enter type name: ");
+            var typename = Console.ReadLine();
+            var newRoot = TupleLiteralRewriter.Rewrite(root, typename);
             File.WriteAllText(filename, ASTPrinter.Print(newRoot));
+            Console.WriteLine("Tuples successfully rewritten.");
         }
-        catch (Exception e)
+        catch (ParseException e)
         {
-            Console.WriteLine("Invalid input file.");
+            Console.WriteLine($"Invalid input file: {e.Message}");
         }
     }
 }
