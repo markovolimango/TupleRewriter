@@ -148,27 +148,27 @@ public class ASTParser
         return new Block(statements);
     }
 
-    private List<string> Tokenize(string source)
+    private List<string> Tokenize(string input)
     {
         var tokens = new List<string>();
         var i = 0;
 
-        while (i < source.Length)
-            if (char.IsWhiteSpace(source[i]))
+        while (i < input.Length)
+            if (char.IsWhiteSpace(input[i]))
             {
                 i++;
             }
-            else if (char.IsLetterOrDigit(source[i]) || source[i] == '_')
+            else if (char.IsLetterOrDigit(input[i]) || input[i] == '_')
             {
                 var token = "";
-                token += source[i++];
-                while ((i < source.Length && char.IsLetterOrDigit(source[i])) || source[i] == '_')
-                    token += source[i++];
+                token += input[i++];
+                while ((i < input.Length && char.IsLetterOrDigit(input[i])) || input[i] == '_')
+                    token += input[i++];
                 tokens.Add(token);
             }
             else
             {
-                tokens.Add(source[i++].ToString());
+                tokens.Add(input[i++].ToString());
             }
 
         return tokens;
