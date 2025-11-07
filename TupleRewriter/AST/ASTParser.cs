@@ -50,12 +50,23 @@ public class ASTParser
     private Id ParseIdExpr()
     {
         var id = GetToken();
+        if (!char.IsLetter(id[0]) && id[0] != '_')
+            throw new ParseException($"Invalid identifier {id}.");
         return new Id(id);
     }
 
     private Num ParseNumExpr()
     {
         var num = GetToken();
+        try
+        {
+            int.Parse(num);
+        }
+        catch (FormatException e)
+        {
+            throw new ParseException($"Invalid number {num}.");
+        }
+
         return new Num(num);
     }
 
